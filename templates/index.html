@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html lang="en"> <head>
+<title>Appointments</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" 
+    src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" 
+    src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" 
+    href="//cdn.jsdelivr.net/bootstrap/latest/css/bootstrap.css" />
+ 
+<!-- Include Date Range Picker -->
+<script type="text/javascript" 
+    src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" 
+    href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+</head>
+
+<body>
+<div class="container">
+
+<div class="row">
+    <h1>Busy times</h1>
+</div>
+<!--If there are any warnings or other messages from a prior action, they appear above the rest of the content, just until the next action.-->
+<div class="row">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+</div>
+
+<div class="row">
+    <h2>Date range</h2>
+</div>
+<div class="row">
+  <form action="/setrange" method="post">
+  <input type="text" name="daterange" size="20"
+    {% if session.daterange is defined %}
+         value="{{session.daterange}}"
+    {% endif %}
+     style="background: #fff; cursor: pointer; padding: 5px 10px;
+     border: 1px solid #ccc;" >
+  <script type="text/javascript">
+  $(function() {
+  $('input[name="daterange"]').daterangepicker(
+    {    ranges: {
+           'Today': [moment(), moment()],
+           'Tomorrow':[moment().add(1, 'days'),
+                       moment().add(1, 'days')], 
+           'This week':[moment(), moment().endOf('week')],
+           'Next week':[moment().add(7, 'days').startOf('week'),
+                        moment().add(7, 'days').endOf('week')],
+           'This month':[moment(), moment().endOf('month')],
+           'Within two weeks':[moment(),moment().add(15, 'days')]
+        }}
+       );
+    });
+  </script>
+
+<input type="submit" class="btn btn-primary" value="Choose" />
+</form>
+</div>
+    <!--Show the calendar list (if we have it).  This will need to be turned into a form from which calendars can be picked. Up to three entries are shown in each row (but the order is across then down; I would prefer down then across).-->
+
+{% if session.calendars is defined  %}
+   <div class="row" style="padding-bottom: 15px">
+	<button class="btn btn-success" id="select">Select All</button>
+	<button class="btn btn-danger" id="deselect">Deselect All</button>
+   </div>
+
+   <script type="text/javascript" >
+	function setCheckBoxes(state) {
+		$("input[type='checkbox']").prop('checked', state);
+	}
+	$("#select").on('click', function() {
+		setCheckBoxes(true);
+	});
+	$("#deselect").on('click', function() {
+		setCheckBoxes(false);
+	});
+  </script>
+
+  <form method="post" action="/select_cal">
+  <div class="row" style="padding-bottom: 10px">
+  {% for cal in session.calendars if cal.selected %}
+    <div class="col-sm-3">
+      <input type="checkbox" name="calendar" value="{{ cal.summary }}"/> 
+      <strong>{{ cal.summary }}</strong>
+    </div>
+    {% if loop.index is divisibleby 3 %}
+          <br><br>
+    {% endif %}
+  {% endfor %}
+  </div>
+  <div class="row">
+    <input type="submit" class="btn btn-primary" value="Find Times">
+  </div>
+  </form>
+{% endif %}
+    
+
+  </div>  <!--container (for bootstrap)-->
+  </body> </html>
