@@ -239,18 +239,14 @@ def get_cal():
 def find_meeting():
     submittedID = request.form.get('meetingID')
     queryResult = btCollection.find({ "meetingID":submittedID }) 
-    print("Got queryResult, about to get start and end dates")
     start = queryResult[0]['begin']
     end = queryResult[0]['end']
-    print("Start: {}, End: {}".format(start,end))
     busyTimes = []
     if queryResult.count() != 0:
         for document in queryResult:
             if document['type'] == "busyTime":
                 entry = (arrow.get(document['begin']).to('local'), arrow.get(document['end']).to('local'))
                 busyTimes.append(entry) 
-        print(busyTimes)
-        print("Got busy times, sending to get_free_times")
         get_free_times(submittedID, busyTimes, start, end)
     else:
         flask.seesion['errorMessage'] = "Error: Invalid ID" 
@@ -411,7 +407,6 @@ def get_busy_times( calendars ):
                 "end": end,
                 "meetingID": ID
                 }
-                print(document)
                 btCollection.insert(document)
     
 def get_free_times(ID, busyTimes, startTime, endTime):
@@ -419,14 +414,9 @@ def get_free_times(ID, busyTimes, startTime, endTime):
     freeTimes = []
     startTime = arrow.get(startTime)
     endTime = arrow.get(endTime)
-    print("In get_free_times, calling addNights")
     allBusyTimes = addNights(busyTimes, startTime, endTime) # add busy times for each day 9pm - 5am
-    print("Successful, calling sortedTimes")
-    print(allBusyTimes)
     sortedTimes = sorted(allBusyTimes, key=lambda times: times[0]) #put them in chronological order
-    print("Successfull, calling fix_overlaps")
     unionizedTimes = fix_overlaps(sortedTimes) #get rid of overlapping times
-    print("Starting calculations")
     for i in range(len(unionizedTimes)):
         if i == 0:
             if startTime < startTime.replace(hour=9, minute=0):#If default starttime is before 9am that day
@@ -452,21 +442,16 @@ def get_free_times(ID, busyTimes, startTime, endTime):
             else:#The end time of the last busy time is after 9am
                 afterLastEvent = (unionizedTimes[i-1][1], endTime)#Therefore we do not need to add time.
             freeTimes.append(afterLastEvent)
-    print("Calculations successful, calling display_free_times")
     display_free_times(freeTimes)
-    print("returning")
     return freeTimes
 
 def addNights(times, startTime, endTime):
     app.logger.debug("Entering addNights")
-    print("About to get days in range")
     days = arrow.Arrow.span_range('day', startTime, endTime)#Get a list of days, each with a start and end time
-    print("Got days, iterating:")
     for day in days:
         #Create busy times from 5pm of one day to 9am of the next, making nights unavailable for free times
         busyNightTime = (day[0].replace(hour=17, minute=0), day[1].replace(days=+1, hour=9, minute=0, second=0, microsecond=0))
         times.append(busyNightTime)
-        print("Successfully inserted times")
     return times 
 
 def fix_overlaps(times):
