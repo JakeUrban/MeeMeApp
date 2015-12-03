@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html lang="en"> 
+<head>
+<title>Add Member</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" 
+    src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" 
+    src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" 
+    href="//cdn.jsdelivr.net/bootstrap/latest/css/bootstrap.css" />
+
+</head>
+
+<body>
+  <div class="container">
+    
+    <div class="row">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+    </div>
+
+    <div class="row">
+      <label>Press the button to grant access to your Google account</label>
+      <form action="/choose">
+          <input type="submit" value="Allow">
+      </form>
+    </div>
+    
+  {% if session.calendars is defined  %}
+    <div class="row" style="padding-bottom: 15px">
+        <button class="btn btn-success" id="select">Select All</button>
+        <button class="btn btn-danger" id="deselect">Deselect All</button>
+    </div>
+
+    <script type="text/javascript" >
+        function setCheckBoxes(state) {
+                $("input[type='checkbox']").prop('checked', state);
+        }
+        $("#select").on('click', function() {
+                setCheckBoxes(true);
+        });
+        $("#deselect").on('click', function() {
+                setCheckBoxes(false);
+        });
+    </script>
+
+    <form method="post" action="/select_cal">
+    <div class="row" style="padding-bottom: 10px">
+    {% for cal in session.calendars if cal.selected %}
+      <div class="col-sm-3">
+        <input type="checkbox" name="calendar" value="{{ cal.summary }}"/>
+        <strong>{{ cal.summary }}</strong>
+      </div>
+      {% if loop.index is divisibleby 3 %}
+            <br><br>
+      {% endif %}
+    {% endfor %}
+    </div>
+    <div class="row">
+      <input type="submit" class="btn btn-primary" value="Find Times">
+    </div>
+    </form>
+  {% endif %}
+  
+  </div>
+
+</body>
+</html>

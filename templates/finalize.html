@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html lang="en"> <head>
+<title>Appointments</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" 
+    src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" 
+    src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" 
+    href="//cdn.jsdelivr.net/bootstrap/latest/css/bootstrap.css" />
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="row">
+    <h1>Finalize Your Meeting</h1>
+</div>
+
+<div class"row">
+    <form method="POST" action="/findMeeting">
+        Meeting ID:<br>
+        <input type="text" name="meetingID">
+        <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
+</div>
+
+<div>
+
+{% if session.errorMessage is defined %}
+  <font color="red">{{ session.errorMessage }}</font>
+{% endif %}
+
+</div>
+
+<div class="row">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+</div>
+
+</div>
+
+</body>
+</html>

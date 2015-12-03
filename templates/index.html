@@ -22,21 +22,17 @@
 <body>
 <div class="container">
 
+{% if not session.meetingID is defined %}
 <div class="row">
-    <h1>Busy times</h1>
+    <h1>Create a Meeting</h1>
 </div>
-<!--If there are any warnings or other messages from a prior action, they appear above the rest of the content, just until the next action.-->
 <div class="row">
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+    <form action="/finalize">
+        <label>Need to finalize an already-existing meeting?</label>
+        <input type="submit" value="Finalize" class="btn btn-primary">
+    </form>
 </div>
+
 
 <div class="row">
     <h2>Date range</h2>
@@ -69,6 +65,14 @@
 <input type="submit" class="btn btn-primary" value="Choose" />
 </form>
 </div>
+{% else %}
+    <div class="row" style="padding-top: 30px">
+      <label>Do you give MeetMe permission to access your Google account?</label>
+      <form action="/choose">
+          <input type="submit" class="btn btn-primary" value="Allow">
+      </form>
+    </div>
+{% endif %}
     <!--Show the calendar list (if we have it).  This will need to be turned into a form from which calendars can be picked. Up to three entries are shown in each row (but the order is across then down; I would prefer down then across).-->
 
 {% if session.calendars is defined  %}
@@ -107,6 +111,17 @@
   </form>
 {% endif %}
     
+<div class="row">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+</div>
 
   </div>  <!--container (for bootstrap)-->
   </body> </html>
