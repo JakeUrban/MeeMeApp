@@ -38,7 +38,6 @@ APPLICATION_NAME = 'MeetMe Class Project'
 try: 
     dbclient = MongoClient(CONFIG.MONGO_URL)
     db = dbclient.times
-    ftCollection = db.freeTimes
     btCollection = db.busyTimes
 
 except:
@@ -83,8 +82,7 @@ def choose():
     if not credentials:
       app.logger.debug("Redirecting to authorization")
       return flask.redirect(flask.url_for('oauth2callback'))
-    
-    global gcal_service #Needs to be accessed by other functions
+   
     gcal_service = get_gcal_service(credentials)
     app.logger.debug("Returned from get_gcal_service")
     flask.session['calendars'] = list_calendars(gcal_service)
@@ -157,12 +155,9 @@ def oauth2callback():
   ## see that, it must be the first time through, so we
   ## need to do step 1. 
   app.logger.debug("Got flow")
-  print("Got flow")
   if 'code' not in flask.request.args:
-    print("In if stagement")
     app.logger.debug("Code not in flask.request.args")
     auth_uri = flow.step1_get_authorize_url()
-    print("Got auth_uri")
     return flask.redirect(auth_uri)
     ## This will redirect back here, but the second time through
     ## we'll have the 'code' parameter set
@@ -238,18 +233,25 @@ def get_cal():
 @app.route('/findMeeting', methods=['POST'])
 def find_meeting():
     submittedID = request.form.get('meetingID')
+    flask.session['submittedID'] = submittedID
     queryResult = btCollection.find({ "meetingID":submittedID }) 
-    start = queryResult[0]['begin']
-    end = queryResult[0]['end']
     busyTimes = []
     if queryResult.count() != 0:
+        start = queryResult[0]['begin']
+        end = queryResult[0]['end']
         for document in queryResult:
             if document['type'] == "busyTime":
                 entry = (arrow.get(document['begin']).to('local'), arrow.get(document['end']).to('local'))
                 busyTimes.append(entry) 
-        get_free_times(submittedID, busyTimes, start, end)
+        get_free_times(busyTimes, start, end)
     else:
         flask.seesion['errorMessage'] = "Error: Invalid ID" 
+    return render_template('finalize.html')
+
+@app.route('/deleteMeeting', methods=['POST'])
+def delete_meeting():
+    btCollection.remove({ "meetingID":flask.session['submittedID'] })
+    flask.session['isDeleted'] = "yes"
     return render_template('finalize.html')
 
 ####
@@ -391,6 +393,8 @@ def get_busy_times( calendars ):
         "timeMax" : end_date,
         "items" :[{ "id" : cal['id'] }]
         }
+        credentials = valid_credentials()
+        gcal_service = get_gcal_service(credentials)
         result = gcal_service.freebusy().query(body=freebusy_query).execute() # results of the query: all busy times for that date range
         resultTimes = result['calendars'][cal['id']]['busy'] # Extract busy times from response
         if userType == "Proposer":
@@ -408,9 +412,8 @@ def get_busy_times( calendars ):
                 "meetingID": ID
                 }
                 btCollection.insert(document)
-    
-def get_free_times(ID, busyTimes, startTime, endTime):
-    app.logger.debug("Entering get_free_times")
+
+def get_free_times(busyTimes, startTime, endTime):
     freeTimes = []
     startTime = arrow.get(startTime)
     endTime = arrow.get(endTime)
@@ -446,7 +449,6 @@ def get_free_times(ID, busyTimes, startTime, endTime):
     return freeTimes
 
 def addNights(times, startTime, endTime):
-    app.logger.debug("Entering addNights")
     days = arrow.Arrow.span_range('day', startTime, endTime)#Get a list of days, each with a start and end time
     for day in days:
         #Create busy times from 5pm of one day to 9am of the next, making nights unavailable for free times
@@ -455,7 +457,6 @@ def addNights(times, startTime, endTime):
     return times 
 
 def fix_overlaps(times):
-    app.logger.debug("Entering fix_overlaps")
     for i in range(len(times)-1):
         if i < (len(times)-1):
             if times[i][1] > times[i+1][0]:#if the ending time of the current is greater than the starting time of the next

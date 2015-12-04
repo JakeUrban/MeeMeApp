@@ -30,9 +30,15 @@
 </div>
 
 <div>
-
 {% if session.errorMessage is defined %}
   <font color="red">{{ session.errorMessage }}</font>
+{% endif %}
+</div>
+
+<div>
+
+{% if session.isDeleted is defined %}
+    <label>Your meeting information has been deleted.</label>
 {% endif %}
 
 </div>
@@ -44,10 +50,16 @@
     {% for message in messages %}
       <li>{{ message }}</li>
     {% endfor %}
-    </ul>
+    </ul><br>
+    <form action="/deleteMeeting" method="POST">
+      <label>Done using MeetMe? Delete your meeting information:</label>
+      <input class="btn btn-danger" type="submit" value="Delete">
+    </form>
   {% endif %}
 {% endwith %}
 </div>
+
+
 
 </div>
 
