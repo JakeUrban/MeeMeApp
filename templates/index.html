@@ -29,13 +29,11 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="text-center">
+<div class="row text-center">
     <form action="/finalize">
         <label>Need to finalize an already-existing meeting?</label>
         <input type="submit" value="Finalize" class="btn btn-primary">
     </form>
-  </div>
 </div>
 
 
@@ -44,8 +42,7 @@
     <h2>Date range</h2>
   </div>
 </div>
-<div class="row">
- <div class="text-center">
+<div class="row text-center">
   <form action="/setrange" method="post">
   <input type="text" name="daterange" size="25"
     {% if session.daterange is defined %}
@@ -73,13 +70,12 @@
 <input type="submit" class="btn btn-primary" value="Choose" />
 </form>
 </div>
-</div>
 {% else %}
     <div class="row text-center" style="padding-top: 30px">
-      <label>Do you give MeetMe permission to access your Google account?</label>
-      <form action="/choose">
+        <form action="/choose">
+          <label>Do you give MeetMe permission to access your Google account?</label>
           <input type="submit" class="btn btn-primary" value="Allow">
-      </form>
+        </form>
     </div>
 {% endif %}
     <!--Show the calendar list (if we have it).  This will need to be turned into a form from which calendars can be picked. Up to three entries are shown in each row (but the order is across then down; I would prefer down then across).-->

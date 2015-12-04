@@ -33,11 +33,22 @@ def test_case_1():
     start = arrow.get('2015-12-04T00:00:00-08:00')
     end = arrow.get('2015-12-10T00:00:00-08:00')
     freeTimes = str(main.get_free_times(data,start,end))
-    expected = "[(<Arrow [2015-12-04T09:00:00-08:00]>, <Arrow [2015-12-04T10:00:00-08:00]>), (<Arrow [2015-12-04T11:15:00-08:00]>, <Arrow [2015-12-04T12:00:00-08:00]>), (<Arrow [2015-12-04T13:15:00-08:00]>, <Arrow [2015-12-04T15:00:00-08:00]>), (<Arrow [2015-12-04T16:15:00-08:00]>, <Arrow [2015-12-04T17:00:00-08:00]>), (<Arrow [2015-12-05T09:00:00-08:00]>, <Arrow [2015-12-05T17:00:00-08:00]>), (<Arrow [2015-12-06T09:00:00-08:00]>, <Arrow [2015-12-06T17:00:00-08:00]>), (<Arrow [2015-12-07T09:00:00-08:00]>, <Arrow [2015-12-07T17:00:00-08:00]>), (<Arrow [2015-12-08T09:00:00-08:00]>, <Arrow [2015-12-08T17:00:00-08:00]>), (<Arrow [2015-12-09T09:00:00-08:00]>, <Arrow [2015-12-09T17:00:00-08:00]>), (<Arrow [2015-12-10T09:00:00-08:00]>, <Arrow [2015-12-10T17:00:00-08:00]>)]"
+    expected = ["[(<Arrow [2015-12-04T09:00:00-08:00]>, <Arrow [2015-12-04T10:00:00-08:00]>), ",
+                "(<Arrow [2015-12-04T11:15:00-08:00]>, <Arrow [2015-12-04T12:00:00-08:00]>), ",
+                "(<Arrow [2015-12-04T13:15:00-08:00]>, <Arrow [2015-12-04T15:00:00-08:00]>), ",
+                "(<Arrow [2015-12-04T16:15:00-08:00]>, <Arrow [2015-12-04T17:00:00-08:00]>), ",
+                "(<Arrow [2015-12-05T09:00:00-08:00]>, <Arrow [2015-12-05T17:00:00-08:00]>), ",
+                "(<Arrow [2015-12-06T09:00:00-08:00]>, <Arrow [2015-12-06T17:00:00-08:00]>), ",
+                "(<Arrow [2015-12-07T09:00:00-08:00]>, <Arrow [2015-12-07T17:00:00-08:00]>), ",
+                "(<Arrow [2015-12-08T09:00:00-08:00]>, <Arrow [2015-12-08T17:00:00-08:00]>), ",
+                "(<Arrow [2015-12-09T09:00:00-08:00]>, <Arrow [2015-12-09T17:00:00-08:00]>), ",
+                "(<Arrow [2015-12-10T09:00:00-08:00]>, <Arrow [2015-12-10T17:00:00-08:00]>)]"]
+    expected = ''.join(expected)
+    print(expected)
     assert freeTimes == expected
 
 def test_case_2():
-    """Same-day meeting (This was a bug previously)"""
+    """Same-day meeting"""
     start,end,data = generateData(1)
     newData = [(data[0][0].replace(days=+1), data[0][1].replace(days=+1))]
     start = start.replace(days=+1)
@@ -48,9 +59,8 @@ def test_case_2():
     assert freeTimes == expected
 
 def test_case_3():
-    """End time same as start time of next busy time"""
+    """End-time of EventA is the same as start-time of EventB"""
     start,end,data = generateData(3)
-    #(<Arrow [2015-12-03T09:00:00-08:00]>, <Arrow [2015-12-03T10:00:00-08:00]>), (<Arrow [2015-12-04T12:00:00-08:00]>, <Arrow [2015-12-04T13:00:00-08:00]>), (<Arrow [2015-12-05T15:00:00-08:00]>, <Arrow [2015-12-05T16:00:00-08:00]>)]
     newData = [ (data[0][0], data[0][1]), (data[1][0].replace(days=-1, hour=10), data[1][1].replace(days=-1)), (data[2][0],data[2][1]) ]
     tuple1 = (arrow.now().to('local').replace(hour=13, minute=15, second=0, microsecond=0),
               arrow.now().to('local').replace(hour=17, minute=0, second=0, microsecond=0))
@@ -63,7 +73,36 @@ def test_case_3():
     tuple5 = (arrow.now().to('local').replace(days=+3, hour=9, minute=0, second=0, microsecond=0),
               arrow.now().to('local').replace(days=+3, hour=17, minute=0, second=0, microsecond=0))
     expected = str([tuple1,tuple2,tuple3,tuple4,tuple5])
-    print(expected)
     freeTimes = str(main.get_free_times(newData,start,end))
-    print(freeTimes)
     assert freeTimes == expected
+
+def test_case_4():
+    """EventA ends before AND starts after EventB"""
+    start,end,data = generateData(2)
+    newData = [ (data[0][0], data[1][1].replace(days=-1, hours=+1)), (data[1][0].replace(days=-1), data[1][1].replace(days=-1)) ]
+    tuple1 = (arrow.now().to('local').replace(hour=14, minute=15, second=0, microsecond=0),
+              arrow.now().to('local').replace(hour=17, minute=0, second=0, microsecond=0))
+    tuple2 = (arrow.now().to('local').replace(days=+1, hour=9, minute=0, second=0, microsecond=0),
+              arrow.now().to('local').replace(days=+1, hour=17, minute=0, second=0, microsecond=0))
+    tuple3 = (arrow.now().to('local').replace(days=+2, hour=9, minute=0, second=0, microsecond=0),
+              arrow.now().to('local').replace(days=+2, hour=17, minute=0, second=0, microsecond=0))
+    expected = str([tuple1,tuple2,tuple3])
+    freeTimes = str(main.get_free_times(newData,start,end))
+    assert freeTimes == expected
+
+def test_case_5():
+    """EventA ends during EventB"""
+    start,end,data = generateData(2)
+    end = end.replace(days=-2)
+    newData = [ (data[0][0], data[1][1].replace(days=-1, minutes=-30)),(data[1][0].replace(days=-1), data[1][1].replace(days=-1)) ]
+    tuple1 = (arrow.now().to('local').replace(hour=13, minute=0, second=0, microsecond=0),
+              arrow.now().to('local').replace(hour=17, minute=0, second=0, microsecond=0))
+    expected = str([tuple1])
+    freeTimes = str(main.get_free_times(newData,start,end))
+    assert expected == freeTimes
+
+def test_case_6():
+    
+
+
+
