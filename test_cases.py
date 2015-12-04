@@ -17,7 +17,7 @@ def generateData(numOfDays):
         if dataHour < 20:
             dataHour = dataHour + 3
         else:
-            dataHour = 0
+            dataHour = 9
     return start,end,dataTuples 
 
 def test_case_1():

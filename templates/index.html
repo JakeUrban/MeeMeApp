@@ -107,7 +107,7 @@
   {% for cal in session.calendars if cal.selected %}
       <input type="checkbox" name="calendar" value="{{ cal.summary }}"/> 
       <strong style="padding-right: 25px">{{ cal.summary }}</strong>
-    {% if loop.index is divisibleby 3 %}
+    {% if loop.index is divisibleby 4 %}
           <br><br>
     {% endif %}
   {% endfor %}

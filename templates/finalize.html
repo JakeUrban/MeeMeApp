@@ -17,38 +17,35 @@
 
 <div class="container">
 
-<div class="row">
+<div class="row text-center">
     <h1>Finalize Your Meeting</h1>
 </div>
 
-<div class"row">
+<div class="row text-center">
     <form method="POST" action="/findMeeting">
-        Meeting ID:<br>
-        <input type="text" name="meetingID">
+        Meeting ID: <input type="text" name="meetingID">
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>
 </div>
 
-<div>
+<div class="text-center">
 {% if session.errorMessage is defined %}
   <font color="red">{{ session.errorMessage }}</font>
 {% endif %}
 </div>
 
-<div>
-
+<div class="text-center">
 {% if session.isDeleted is defined %}
     <label>Your meeting information has been deleted.</label>
 {% endif %}
-
 </div>
 
-<div class="row">
+<div class="row text-center">
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <ul class=flashes>
     {% for message in messages %}
-      <li>{{ message }}</li>
+      <p>{{ message }}</p>
     {% endfor %}
     </ul><br>
     <form action="/deleteMeeting" method="POST">
