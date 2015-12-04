@@ -428,8 +428,12 @@ def get_free_times(busyTimes, startTime, endTime):
                 correctedTime = unionizedTimes[i][0].replace(hour=17, minute=0)#Change end time to 5pm
                 beforeFirstEvent = (startTime, correctedTime)
             else:
-                beforeFirstEvent = (startTime, unionizedTimes[i][0])
-            freeTimes.append(beforeFirstEvent)
+                if startTime != unionizedTimes[i][0]:
+                    beforeFirstEvent = (startTime, unionizedTimes[i][0])
+                else:
+                    beforeFirstEvent = "First Event is 9am"
+            if beforeFirstEvent != "First Event is 9am":
+                freeTimes.append(beforeFirstEvent)
         elif (i > 0) and (i < (len(unionizedTimes)-1)):#If its the first or last time in the loop
             if unionizedTimes[i-1][1].hour == 9:#if the starttime is 9am
                 withOrWithoutAddedTime = unionizedTimes[i-1][1] #leave as is
