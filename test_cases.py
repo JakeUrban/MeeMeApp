@@ -46,3 +46,24 @@ def test_case_2():
     expected = "[" + str(tuple1) + "]"
     freeTimes = str(main.get_free_times(newData,start,end))
     assert freeTimes == expected
+
+def test_case_3():
+    """End time same as start time of next busy time"""
+    start,end,data = generateData(3)
+    #(<Arrow [2015-12-03T09:00:00-08:00]>, <Arrow [2015-12-03T10:00:00-08:00]>), (<Arrow [2015-12-04T12:00:00-08:00]>, <Arrow [2015-12-04T13:00:00-08:00]>), (<Arrow [2015-12-05T15:00:00-08:00]>, <Arrow [2015-12-05T16:00:00-08:00]>)]
+    newData = [ (data[0][0], data[0][1]), (data[1][0].replace(days=-1, hour=10), data[1][1].replace(days=-1)), (data[2][0],data[2][1]) ]
+    tuple1 = (arrow.now().to('local').replace(hour=13, minute=15, second=0, microsecond=0),
+              arrow.now().to('local').replace(hour=17, minute=0, second=0, microsecond=0))
+    tuple2 = (arrow.now().to('local').replace(days=+1, hour=9, minute=0, second=0, microsecond=0),
+              arrow.now().to('local').replace(days=+1, hour=17, minute=0, second=0, microsecond=0))
+    tuple3 = (arrow.now().to('local').replace(days=+2, hour=9, minute=0, second=0, microsecond=0), 
+              arrow.now().to('local').replace(days=+2, hour=15, minute=0, second=0, microsecond=0))
+    tuple4 = (arrow.now().to('local').replace(days=+2, hour=16, minute=15, second=0, microsecond=0),
+              arrow.now().to('local').replace(days=+2, hour=17, minute=0, second=0, microsecond=0))
+    tuple5 = (arrow.now().to('local').replace(days=+3, hour=9, minute=0, second=0, microsecond=0),
+              arrow.now().to('local').replace(days=+3, hour=17, minute=0, second=0, microsecond=0))
+    expected = str([tuple1,tuple2,tuple3,tuple4,tuple5])
+    print(expected)
+    freeTimes = str(main.get_free_times(newData,start,end))
+    print(freeTimes)
+    assert freeTimes == expected

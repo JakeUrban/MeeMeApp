@@ -463,7 +463,9 @@ def addNights(times, startTime, endTime):
 def fix_overlaps(times):
     for i in range(len(times)-1):
         if i < (len(times)-1):
-            if times[i][1] > times[i+1][0]:#if the ending time of the current is greater than the starting time of the next
+            if times[i][1] >= times[i+1][0]:#if the ending time of the current is greater than or equal to the starting time of the next
+                if times[i][1] == times[i+1][0]:
+                    newTuple = (times[i][0], times[i+1][1])
                 if times[i][1] < times[i+1][1]:#if the ending time of the current is less than the ending time of the next
                     newTuple = (times[i][0],times[i+1][1])#Combine the start of the current and the end of the next
                 else:
