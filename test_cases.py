@@ -102,7 +102,15 @@ def test_case_5():
     assert expected == freeTimes
 
 def test_case_6():
-    
+    """EventA ends at the same time as EventB"""
+    start,end,data = generateData(2)
+    end = end.replace(days=-2)
+    newData = [ (data[0][0], data[0][1].replace(hours=+3)), (data[1][0].replace(days=-1), data[1][1].replace(days=-1)) ]
+    tuple1 = (arrow.now().to('local').replace(hour=13, minute=0, second=0, microsecond=0),
+              arrow.now().to('local').replace(hour=17, minute=0, second=0, microsecond=0))
+    expected = str([tuple1])
+    freeTimes = str(main.get_free_times(newData,start,end))
+    assert freeTimes == expected
 
 
 
