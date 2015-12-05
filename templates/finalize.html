@@ -36,7 +36,9 @@
 
 <div class="text-center">
 {% if session.isDeleted is defined %}
+  <form action="/index">
     <label>Your meeting information has been deleted.</label>
+    <input type="submit" class="btn btn-success" value="Home">
 {% endif %}
 </div>
 

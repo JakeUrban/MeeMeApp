@@ -56,6 +56,12 @@ def index():
   app.logger.debug("Entering index")
   if 'begin_date' not in flask.session:
     init_session_values()
+  if 'calendars' in flask.session:
+    flask.session.pop('calendars', None)
+  if 'createdID' in flask.session:
+    flask.session.pop('createdID', None)
+  if 'isDeleted' in flask.session:
+    flask.session.pop('isDeleted', None)
   return render_template('index.html')
 
 """add_member also takes you to index.html, but it defines meetingID 
@@ -223,10 +229,10 @@ def get_cal():
         if cal['summary'] in selected_calendars:
             matches.append(cal)
     get_busy_times(matches)
-    try:
+    if 'createdID' in flask.session:
         flask.flash("Your meeting identification number: {}".format(flask.session['createdID']))
         flask.flash("URL to add members to meeting: ix.cs.uoregon.edu:6789/addMember?key={}".format(flask.session['createdID']))
-    except:
+    else:
         flask.flash("You have added your availability to the meeting!")
     return flask.redirect(flask.url_for("index")) 
 
@@ -377,12 +383,12 @@ def get_busy_times( calendars ):
     app.logger.debug("Entering get_busy_times")
     busyTimes = []
     userType = None
-    try:
+    if 'createdID' in flask.session:
         result = btCollection.find({ "type":"daterange", "meetingID":flask.session['createdID'] })[0]
-        userType = "Proposer"
-    except:
+        ID = flask.session['createdID']
+    else:
         result = btCollection.find({ "type":"daterange", "meetingID":flask.session['meetingID'] })[0]
-        userType = "Member"
+        ID = flask.session['meetingID']
     begin_date = result['begin']
     end_date = result['end']
     if begin_date == end_date:                          #When the user is looking for a meeting time during 1 day:
@@ -397,10 +403,6 @@ def get_busy_times( calendars ):
         gcal_service = get_gcal_service(credentials)
         result = gcal_service.freebusy().query(body=freebusy_query).execute() # results of the query: all busy times for that date range
         resultTimes = result['calendars'][cal['id']]['busy'] # Extract busy times from response
-        if userType == "Proposer":
-            ID = flask.session['createdID']
-        else:
-            ID = flask.session['meetingID']
         if resultTimes:#If the list is not empty
             for startEndPair in resultTimes:
                 start = startEndPair['start']
