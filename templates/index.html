@@ -47,14 +47,10 @@
 </div>
 
 
-<div class="row">
-  <div class="text-center">
-    <h2>Date range</h2>
-  </div>
-</div>
-<div class="row text-center">
-  <form action="/setrange" method="post">
-  <input type="text" name="daterange" size="25"
+<div class="row text-center" style="padding-top:3%">
+    <form role="form" class="form-inline" action="/setrange" method="post">
+    <label id="daterange">Date Range:</label>
+    <input type="text" name="daterange" size="21"
     {% if session.daterange is defined %}
          value="{{session.daterange}}"
     {% endif %}
@@ -91,24 +87,10 @@
     <!--Show the calendar list (if we have it).  This will need to be turned into a form from which calendars can be picked. Up to three entries are shown in each row (but the order is across then down; I would prefer down then across).-->
 
 {% if session.calendars is defined  %}
-   <div class="row text-center" style="padding-bottom: 15px">
-	<button class="btn btn-success" id="select">Select All</button>
-	<button class="btn btn-danger" id="deselect">Deselect All</button>
-   </div>
-
-   <script type="text/javascript" >
-	function setCheckBoxes(state) {
-		$("input[type='checkbox']").prop('checked', state);
-	}
-	$("#select").on('click', function() {
-		setCheckBoxes(true);
-	});
-	$("#deselect").on('click', function() {
-		setCheckBoxes(false);
-	});
-  </script>
-
   <form method="post" action="/select_cal">
+  <div class="row text-center">
+    <label>Select the calendars you want to get availability from.</label>
+  </div>
   <div class="row text-center" style="padding-bottom: 10px">
   {% for cal in session.calendars if cal.selected %}
       <input type="checkbox" name="calendar" value="{{ cal.summary }}"/> 
@@ -119,6 +101,8 @@
   {% endfor %}
   </div>
   <div class="row text-center">
+    <input type="button" class="btn btn-success" id="select" value="Select All">
+    <input type="button" class="btn btn-danger" id="deselect" value="Deselect All">
     <input type="submit" class="btn btn-primary" value="Find Times">
   </div>
   </form>
@@ -134,5 +118,22 @@
   {% endif %}
 {% endwith %}
 
-  </div>  <!--container (for bootstrap)-->
+
+</div>  <!--container (for bootstrap)-->
+
+<div id="footer">
+   <p id="p1">Created By: Jake Urban</p>
+</div>
+  
+   <script type="text/javascript" >
+	function setCheckBoxes(state) {
+		$("input[type='checkbox']").prop('checked', state);
+	}
+	$("#select").on('click', function() {
+		setCheckBoxes(true);
+	});
+	$("#deselect").on('click', function() {
+		setCheckBoxes(false);
+	});
+  </script> 
   </body> </html>
