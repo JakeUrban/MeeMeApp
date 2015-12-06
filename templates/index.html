@@ -26,7 +26,8 @@
 <div class="container">
 
 <div class="row" id="topBar">
-    <p id="MeetMe" style="vertical-align:center">MeetMe!</p>
+    <a id="MeetMe" href="/index">
+      <img src={{ url_for('static', filename='images/MeetMeLogo.jpg')}} width="150" height="30"></a>
 </div>
 
 {% if not session.meetingID is defined %}
@@ -126,6 +127,11 @@
 </div>
   
    <script type="text/javascript" >
+ 
+        function redirect() {
+            window.location.href = "ix.cs.uoregon.edu:6789"
+        }
+
 	function setCheckBoxes(state) {
 		$("input[type='checkbox']").prop('checked', state);
 	}
