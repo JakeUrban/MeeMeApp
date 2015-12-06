@@ -10,6 +10,8 @@
     src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <link rel="stylesheet" type="text/css" 
     href="//cdn.jsdelivr.net/bootstrap/latest/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css"
+    href="../static/css/index.css"/>
  
 <!-- Include Date Range Picker -->
 <script type="text/javascript" 
@@ -17,16 +19,24 @@
 <link rel="stylesheet" type="text/css" 
     href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 
+
 </head>
 
 <body>
 <div class="container">
 
+<div class="row" id="topBar">
+    <p id="MeetMe" style="vertical-align:center">MeetMe!</p>
+</div>
+
 {% if not session.meetingID is defined %}
-<div class="row">
-  <div class="text-center">
+<!--<div>
+    <a href="https://accounts.google.com/logout" role="button" class="btn btn-danger">Sign Out</a>
+</div>-->
+
+
+<div class="row text-center" style="padding-top:5%">
     <h1>Create a Meeting</h1>
-  </div>
 </div>
 
 <div class="row text-center">
@@ -71,7 +81,7 @@
 </form>
 </div>
 {% else %}
-    <div class="row text-center" style="padding-top: 30px">
+    <div class="row text-center" style="padding-top:5%">
         <form action="/choose">
           <label>Do you give MeetMe permission to access your Google account?</label>
           <input type="submit" class="btn btn-primary" value="Allow">
@@ -114,17 +124,15 @@
   </form>
 {% endif %}
     
-<div class="row text-center">
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class=flashes>
     {% for message in messages %}
-      <p>{{ message }}</p>
+      <div class="text-center">
+        <p>{{ message }}</p>
+      </div>
     {% endfor %}
-    </ul>
   {% endif %}
 {% endwith %}
-</div>
 
   </div>  <!--container (for bootstrap)-->
   </body> </html>

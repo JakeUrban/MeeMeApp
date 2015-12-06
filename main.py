@@ -62,6 +62,8 @@ def index():
     flask.session.pop('createdID', None)
   if 'isDeleted' in flask.session:
     flask.session.pop('isDeleted', None)
+  if 'meetingID' in flask.session:
+    flask.session.pop('meetingID', None)
   return render_template('index.html')
 
 """add_member also takes you to index.html, but it defines meetingID 
@@ -76,6 +78,11 @@ def add_member():
 @app.route("/finalize")
 def finalize():
     return render_template('finalize.html')
+
+#@app.route("/signout", methods=["POST"])
+#def delete_credentials():
+#    flask.session.pop('credentials', None)
+#    choose()
 
 @app.route("/choose")
 def choose():

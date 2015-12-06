@@ -1,0 +1,15 @@
+#topBar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height:7%;
+    background-color: rgb(51,122,183);
+}
+
+#MeetMe {
+    padding-left: 3%;
+    color: white;
+    font-size: 30px;
+    font-family: 'Arial Rounded MT Bold';
+}
+
