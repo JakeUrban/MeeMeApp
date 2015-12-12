@@ -1,7 +1,7 @@
 # MeetMe
 
 This application allows you to schedule a meeting with a group of people.
-Live at: www.ix.cs.uoregon.edu:6789
+Live at: ix.cs.uoregon.edu:6789
 
 # How it Works
 
