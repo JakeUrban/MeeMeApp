@@ -53,7 +53,7 @@
 <div class="row text-center" style="padding-top:3%">
     <form role="form" class="form-inline" action="/setrange" method="post">
     <label id="daterange">Date Range:</label>
-    <input type="text" name="daterange" size="21"
+    <input type="text" name="daterange" size="28"
     {% if session.daterange is defined %}
          value="{{session.daterange}}"
     {% endif %}
@@ -62,7 +62,8 @@
   <script type="text/javascript">
   $(function() {
   $('input[name="daterange"]').daterangepicker(
-    {    ranges: {
+    {
+        ranges: {
            'Today': [moment(), moment()],
            'Tomorrow':[moment().add(1, 'days'),
                        moment().add(1, 'days')], 
@@ -71,7 +72,10 @@
                         moment().add(7, 'days').endOf('week')],
            'This month':[moment(), moment().endOf('month')],
            'Within two weeks':[moment(),moment().add(15, 'days')]
-        }}
+        },
+        "autoApply": true,
+        "opens": "center"
+    }
        );
     });
   </script>
